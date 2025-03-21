@@ -1,0 +1,23 @@
+# ---------------------------------------------------------------------------------------------
+# RLGrid: Grid world for analyzing maximization bias in RL with Q-learning and Double Q-learning
+#
+# config_rl_grid.yaml:
+# > Configuration file
+# ---------------------------------------------------------------------------------------------
+
+# Training parameters
+num_runs : 200          # Number of runs for the experiment
+num_episodes : 3000     # Number of episodes for each run
+
+# Environment parameters
+dyn_prob : 1.0          # Probability to reach the desired state for taking a respective action
+
+# Reward model parameters
+prob_pos : 0.45         # Probability of positive reward
+rew_pos : 3             # Positive reward
+rew_neg : -1            # Negative reward
+
+# (Double)Q-learning hyperparameters
+alpha : 0.05            # Learning rate
+gamma : 0.8             # Discount factor
+epsilon : 0.1           # Epsilon for epsilon-greedy policy
