@@ -31,7 +31,8 @@ class GridWorldEnv:
             ]
         )  
         # Initialize location
-        self.state = np.array([2, 2])           # Current (initial) state
+        self.init_state = np.array([2, 2])           # Current (initial) state
+        self.state = self.init_state
         self.previous_state = self.state        # Previous state
 
         # Define action space
@@ -79,7 +80,7 @@ class GridWorldEnv:
         '''
             Returns the current observations
         '''
-        return [self.k, self.state[0], self.state[1], self.action, self.reward]
+        return {'step': self.k, 'state': self.state, 'action': self.action, 'reward': self.reward}
 
     def _get_reward(self):
         '''
@@ -129,7 +130,7 @@ class GridWorldEnv:
                 elif self.state[0] == 2 and self.state[1] == 1:     # s4
                     self.state = np.array([1, 0])
                 else:
-                    assert False, 'Non valid state or Terminal state!'
+                    assert False, f'Invalid state {self.state} for action North or Terminal state!'
             elif action == self.actions[1]:  # go east
                 if self.state[0] == 2 and self.state[1] == 2:       # s0
                     self.state = np.array([2, 3])
@@ -142,7 +143,7 @@ class GridWorldEnv:
                 elif self.state[0] == 2 and self.state[1] == 1:     # s4
                     self.state = np.array([2, 2])
                 else:
-                    assert False, 'Non valid state or Terminal state!'
+                    assert False, f'Invalid state {self.state} for action East or Terminal state!'
             elif action == self.actions[2]:  # go south
                 if self.state[0] == 2 and self.state[1] == 2:       # s0
                     self.state = np.array([3, 2])
@@ -155,7 +156,7 @@ class GridWorldEnv:
                 elif self.state[0] == 2 and self.state[1] == 1:     # s4
                     self.state = np.array([3, 0])
                 else:
-                    assert False, 'Non valid state or Terminal state!'
+                    assert False, f'Invalid state {self.state} for action South or Terminal state!'
             elif action == self.actions[3]:  # go west
                 if self.state[0] == 2 and self.state[1] == 2:       # s0
                     self.state = np.array([2, 1])
@@ -168,9 +169,9 @@ class GridWorldEnv:
                 elif self.state[0] == 2 and self.state[1] == 1:     # s4
                     self.state = np.array([2, 0])
                 else:
-                    assert False, 'Non valid state or Terminal state!'
+                    assert False, f'Invalid state {self.state} for action West or Terminal state!'
             else:
-                assert False, 'Action need to match [0, 1, 2, 3] = [north,east,south,west]'
+                assert False, f'Invalid action {action}. Must be one of [0, 1, 2, 3] = [north, east, south, west]'
 
         # Get next observation
         observation = self._get_obs()

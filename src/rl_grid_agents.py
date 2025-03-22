@@ -156,7 +156,7 @@ class DoubleQAgent:
         '''
         self.update_policy()
         rand = np.random.rand()
-        if rand > self.epsilon:
+        if rand > self.RLGridConfiguration.epsilon:
             action = int(self.policy[state[0], state[1]])
         else:
             action = np.random.randint(0, 4)

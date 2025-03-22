@@ -5,7 +5,7 @@
 # > Utility functions for plotting the RL training results
 # ---------------------------------------------------------------------------------------------
 
-def plot_results(q_max_not_ae_avg, q_ae_avg, episodes):
+def plot_results(q_max_not_ae_avg, q_ae_avg):
     import matplotlib.pyplot as plt
 
     plt.rcParams.update({'font.size': 14})
@@ -28,7 +28,9 @@ def plot_results(q_max_not_ae_avg, q_ae_avg, episodes):
     axs[1].set_ylabel(' ')
     axs[1].set_xlabel('Episodes')
 
-    plt.show()
+    plt.savefig(f'plots/Q-Learning_Gridworld_plot.png')
+
+    plt.close()
 
 def plot_reward_history(cum_rew_history):
     import matplotlib.pyplot as plt
