@@ -1,11 +1,11 @@
 # ---------------------------------------------------------------------------------------------
-# RLGrid: Grid world for analyzing maximization bias in RL with Q-learning and Double Q-learning
+# RL_Grid: Grid world for analyzing maximization bias in RL with Q-learning and Double Q-learning
 #
-# utils.py:
+# rl_grid_utils.py:
 # > Utility functions for plotting the RL training results
 # ---------------------------------------------------------------------------------------------
 
-def plot_efficiency(q_max_not_ae_avg, q_ae_avg, episodes):
+def plot_results(q_max_not_ae_avg, q_ae_avg):
     import matplotlib.pyplot as plt
 
     plt.rcParams.update({'font.size': 14})
@@ -28,7 +28,9 @@ def plot_efficiency(q_max_not_ae_avg, q_ae_avg, episodes):
     axs[1].set_ylabel(' ')
     axs[1].set_xlabel('Episodes')
 
-    plt.show()
+    plt.savefig(f'plots/Q-Learning_Gridworld_plot.png')
+
+    plt.close()
 
 def plot_reward_history(cum_rew_history):
     import matplotlib.pyplot as plt

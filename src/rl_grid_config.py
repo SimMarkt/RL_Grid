@@ -1,9 +1,9 @@
 # ---------------------------------------------------------------------------------------------
-# RLGrid: Grid world for analyzing maximization bias in RL with Q-learning and Double Q-learning
+# RL_Grid: Grid world for analyzing maximization bias in RL with Q-learning and Double Q-learning
 #
-# config_rl_grid.py:
+# rl_grid_config.py:
 # > Stores parameters for grid world and the (Double) Q-learning agents
-# > Parses the config_rl_grid.yaml data into a class object for further processing
+# > Parses the config.yaml data into a class object for further processing
 # ---------------------------------------------------------------------------------------------
 
 import yaml
@@ -11,7 +11,7 @@ import yaml
 class RLGridConfiguration():
     def __init__(self):
         # Load the environment configuration from the YAML file
-        with open("config/config_rl_grid.yaml", "r") as env_file:
+        with open("config/config.yaml", "r") as env_file:
             grid_config = yaml.safe_load(env_file)
 
         # Unpack data from dictionary

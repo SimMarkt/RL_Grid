@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------------------------------
-# RLGrid: Grid world for analyzing maximization bias in RL with Q-learning and Double Q-learning
+# RL_Grid: Grid world for analyzing maximization bias in RL with Q-learning and Double Q-learning
 #
-# gridworld_env.py:
+# rl_grid_env.py:
 # > Implements the grid world environment for the RL project
 # ---------------------------------------------------------------------------------------------
 
@@ -31,7 +31,8 @@ class GridWorldEnv:
             ]
         )  
         # Initialize location
-        self.state = np.array([2, 2])           # Current (initial) state
+        self.init_state = np.array([2, 2])           # Current (initial) state
+        self.state = self.init_state
         self.previous_state = self.state        # Previous state
 
         # Define action space
@@ -39,9 +40,10 @@ class GridWorldEnv:
         self.action = self.actions[0]           # Current action
 
         # Define the reward, reward probability, and negative reward mappings
-        self.reward_pos = np.zeros((self.RLGridConfiguration.ROW_DIM_GLOB, self.RLGridConfiguration.COLUMN_DIM_GLOB, 4))
-        self.reward_neg = np.zeros((self.RLGridConfiguration.ROW_DIM_GLOB, self.RLGridConfiguration.COLUMN_DIM_GLOB, 4))
-        self.reward_prob = np.ones((self.RLGridConfiguration.ROW_DIM_GLOB, self.RLGridConfiguration.COLUMN_DIM_GLOB, 4))
+        self.reward = None                                                                                                  # Current reward
+        self.reward_pos = np.zeros((self.RLGridConfiguration.ROW_DIM_GLOB, self.RLGridConfiguration.COLUMN_DIM_GLOB, 4))    # Map with positive rewards
+        self.reward_neg = np.zeros((self.RLGridConfiguration.ROW_DIM_GLOB, self.RLGridConfiguration.COLUMN_DIM_GLOB, 4))    # Map with positive rewards
+        self.reward_prob = np.ones((self.RLGridConfiguration.ROW_DIM_GLOB, self.RLGridConfiguration.COLUMN_DIM_GLOB, 4))    # Map with reward probabilities
 
         # Define positions for each type of reward (x,y,action)
         reward_positions_pos = [
@@ -78,7 +80,7 @@ class GridWorldEnv:
         '''
             Returns the current observations
         '''
-        return [self.k, self.state[0], self.state[1], self.action, self.reward]
+        return {'step': self.k, 'state': self.state, 'action': self.action, 'reward': self.reward}
 
     def _get_reward(self):
         '''
@@ -88,19 +90,19 @@ class GridWorldEnv:
         rand = np.random.rand()
         # Reward calculation including reward probability:
         if rand <= self.reward_prob[self.previous_state[0], self.previous_state[1], self.action]:
-            self.rew = self.reward_pos[self.previous_state[0], self.previous_state[1], self.action]
+            self.reward = self.reward_pos[self.previous_state[0], self.previous_state[1], self.action]
         else:
-            self.rew = self.reward_neg[self.previous_state[0], self.previous_state[1], self.action]
+            self.reward = self.reward_neg[self.previous_state[0], self.previous_state[1], self.action]
 
-        return self.rew
+        return self.reward
 
-    def reset(self):
+    def reset(self, RLGridConfiguration):
         '''
             Important: the observation must be a numpy array
             :return: Observations
         '''
 
-        self.__init__()
+        self.__init__(RLGridConfiguration)
         return self._get_obs() 
 
     def step(self, action):
@@ -128,7 +130,7 @@ class GridWorldEnv:
                 elif self.state[0] == 2 and self.state[1] == 1:     # s4
                     self.state = np.array([1, 0])
                 else:
-                    assert False, 'Non valid state or Terminal state!'
+                    assert False, f'Invalid state {self.state} for action North or Terminal state!'
             elif action == self.actions[1]:  # go east
                 if self.state[0] == 2 and self.state[1] == 2:       # s0
                     self.state = np.array([2, 3])
@@ -141,7 +143,7 @@ class GridWorldEnv:
                 elif self.state[0] == 2 and self.state[1] == 1:     # s4
                     self.state = np.array([2, 2])
                 else:
-                    assert False, 'Non valid state or Terminal state!'
+                    assert False, f'Invalid state {self.state} for action East or Terminal state!'
             elif action == self.actions[2]:  # go south
                 if self.state[0] == 2 and self.state[1] == 2:       # s0
                     self.state = np.array([3, 2])
@@ -154,7 +156,7 @@ class GridWorldEnv:
                 elif self.state[0] == 2 and self.state[1] == 1:     # s4
                     self.state = np.array([3, 0])
                 else:
-                    assert False, 'Non valid state or Terminal state!'
+                    assert False, f'Invalid state {self.state} for action South or Terminal state!'
             elif action == self.actions[3]:  # go west
                 if self.state[0] == 2 and self.state[1] == 2:       # s0
                     self.state = np.array([2, 1])
@@ -167,9 +169,9 @@ class GridWorldEnv:
                 elif self.state[0] == 2 and self.state[1] == 1:     # s4
                     self.state = np.array([2, 0])
                 else:
-                    assert False, 'Non valid state or Terminal state!'
+                    assert False, f'Invalid state {self.state} for action West or Terminal state!'
             else:
-                assert False, 'Action need to match [0, 1, 2, 3] = [north,east,south,west]'
+                assert False, f'Invalid action {action}. Must be one of [0, 1, 2, 3] = [north, east, south, west]'
 
         # Get next observation
         observation = self._get_obs()

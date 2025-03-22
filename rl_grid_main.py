@@ -1,16 +1,16 @@
 # ---------------------------------------------------------------------------------------------
-# RLGrid: Grid world for analyzing maximization bias in RL with Q-learning and Double Q-learning
+# RL_Grid: Grid world for analyzing maximization bias in RL with Q-learning and Double Q-learning
 #
-# rlgrid_main.py:
+# rl_grid_main.py:
 # > Main script for running the RL project
 # ---------------------------------------------------------------------------------------------
 
 import numpy as np
 from tqdm import tqdm
-from src.config_rl_grid import RLGridConfiguration
-from src.gridworld_env import GridWorldEnv
-from src.rl_agents import QAgent, DoubleQAgent
-from src.utils import plot_results
+from src.rl_grid_config import RLGridConfiguration
+from src.rl_grid_env import GridWorldEnv
+from src.rl_grid_agents import QAgent, DoubleQAgent
+from src.rl_grid_utils import plot_results
 
 def main():
     # Load the configuration, the environment, and the agents
@@ -20,20 +20,19 @@ def main():
     agent_DQ = DoubleQAgent(RLGridConfig, env.actions)
 
     # Arrays storing the Q-values for the entire history of training runs and episodes
-    q_init_max_not_ae_history = np.zeros((RLGridConfig.num_runs, RLGridConfig.episodes))    # 
-    q_init_ae_history = np.zeros((RLGridConfig.num_runs, RLGridConfig.episodes))
+    q_init_max_not_ae_history = np.zeros((RLGridConfig.num_runs, RLGridConfig.num_episodes))        # The maximum Q-Value of all non-optimal actions
+    q_init_ae_history = np.zeros((RLGridConfig.num_runs, RLGridConfig.num_episodes))                # Q-Value of the optimal action  
 
     # Arrays storing the Q-values in average over the number of runs for the two different Agents
-    q_max_not_ae_avg = np.zeros((RLGridConfig.episodes, 2))  
-    q_ae_avg = np.zeros((RLGridConfig.episodes, 2))
+    q_max_not_ae_avg = np.zeros((RLGridConfig.num_episodes, 2))             # The maximum Q-Value of all non-optimal actions
+    q_ae_avg = np.zeros((RLGridConfig.num_episodes, 2))                     # Q-Value of the optimal action
 
-    for a in range(2):  # Loop over the two agents
-        agent = agent_Q if a == 0 else agent_DQ
-
-        for run in tqdm(range(RLGridConfig.num_runs), desc="Training"):
-            agent.reset()
-            for i in range(RLGridConfig.episodes):
-                obs = env.reset()
+    for agent in [agent_Q, agent_DQ]:  # Loop over the two agents
+        
+        for run in tqdm(range(RLGridConfig.num_runs), desc="Training Runs ("):
+            agent.reset(RLGridConfig, env.actions)
+            for i in range(RLGridConfig.num_episodes):
+                obs = env.reset(RLGridConfig)
                 state = obs[1:3]
                 done = False
 
