@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------------------------------
-# RLGrid: Grid world for analyzing maximization bias in RL with Q-learning and Double Q-learning
+# RL_Grid: Grid world for analyzing maximization bias in RL with Q-learning and Double Q-learning
 #
-# rl_agents.py:
+# rl_grid_agents.py:
 # > Implements the Q-Learning and Double Q-Learning Algorithms for the RL project
 # ---------------------------------------------------------------------------------------------
 
@@ -74,8 +74,8 @@ class QAgent:
             action = np.random.randint(0, 4)
         return action
 
-    def reset(self):
-        self.__init__()
+    def reset(self, RLGridConfiguration, actions):
+        self.__init__(RLGridConfiguration, actions)
 
 class DoubleQAgent:
     ''' Implementation of the Double-Q-Learning agent. '''
@@ -162,5 +162,5 @@ class DoubleQAgent:
             action = np.random.randint(0, 4)
         return action
 
-    def reset(self):
-        self.__init__()
+    def reset(self, RLGridConfiguration, actions):
+        self.__init__(RLGridConfiguration, actions)

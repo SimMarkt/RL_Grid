@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------------------------------
-# RLGrid: Grid world for analyzing maximization bias in RL with Q-learning and Double Q-learning
+# RL_Grid: Grid world for analyzing maximization bias in RL with Q-learning and Double Q-learning
 #
-# gridworld_env.py:
+# rl_grid_env.py:
 # > Implements the grid world environment for the RL project
 # ---------------------------------------------------------------------------------------------
 
@@ -39,9 +39,10 @@ class GridWorldEnv:
         self.action = self.actions[0]           # Current action
 
         # Define the reward, reward probability, and negative reward mappings
-        self.reward_pos = np.zeros((self.RLGridConfiguration.ROW_DIM_GLOB, self.RLGridConfiguration.COLUMN_DIM_GLOB, 4))
-        self.reward_neg = np.zeros((self.RLGridConfiguration.ROW_DIM_GLOB, self.RLGridConfiguration.COLUMN_DIM_GLOB, 4))
-        self.reward_prob = np.ones((self.RLGridConfiguration.ROW_DIM_GLOB, self.RLGridConfiguration.COLUMN_DIM_GLOB, 4))
+        self.reward = None                                                                                                  # Current reward
+        self.reward_pos = np.zeros((self.RLGridConfiguration.ROW_DIM_GLOB, self.RLGridConfiguration.COLUMN_DIM_GLOB, 4))    # Map with positive rewards
+        self.reward_neg = np.zeros((self.RLGridConfiguration.ROW_DIM_GLOB, self.RLGridConfiguration.COLUMN_DIM_GLOB, 4))    # Map with positive rewards
+        self.reward_prob = np.ones((self.RLGridConfiguration.ROW_DIM_GLOB, self.RLGridConfiguration.COLUMN_DIM_GLOB, 4))    # Map with reward probabilities
 
         # Define positions for each type of reward (x,y,action)
         reward_positions_pos = [
@@ -88,19 +89,19 @@ class GridWorldEnv:
         rand = np.random.rand()
         # Reward calculation including reward probability:
         if rand <= self.reward_prob[self.previous_state[0], self.previous_state[1], self.action]:
-            self.rew = self.reward_pos[self.previous_state[0], self.previous_state[1], self.action]
+            self.reward = self.reward_pos[self.previous_state[0], self.previous_state[1], self.action]
         else:
-            self.rew = self.reward_neg[self.previous_state[0], self.previous_state[1], self.action]
+            self.reward = self.reward_neg[self.previous_state[0], self.previous_state[1], self.action]
 
-        return self.rew
+        return self.reward
 
-    def reset(self):
+    def reset(self, RLGridConfiguration):
         '''
             Important: the observation must be a numpy array
             :return: Observations
         '''
 
-        self.__init__()
+        self.__init__(RLGridConfiguration)
         return self._get_obs() 
 
     def step(self, action):
