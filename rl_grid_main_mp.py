@@ -2,7 +2,7 @@
 # RL_Grid: Grid world for analyzing maximization bias in RL with Q-learning and Double Q-learning
 #
 # rl_grid_main_mp.py:
-# > Main script for running the RL project with multiprocessing
+# > Main script for running the RL project with multiprocessing involved
 # ---------------------------------------------------------------------------------------------
 
 import numpy as np
@@ -28,10 +28,10 @@ def train_agent(agent_class, config, queue, agent_type):
             done = False
 
             while not done:
-                action = agent.take_action(state)
-                obs, reward, done = env.step(action)
-                next_state = obs['state']
-                agent.q_learning_update(state, action, reward, next_state)
+                action = agent.take_action(state)                               # Take an action according to the current policy
+                obs, reward, done = env.step(action)                            # Receive observations and reward from the environment
+                next_state = obs['state']                                       
+                agent.q_learning_update(state, action, reward, next_state)      # Perform (Double)Q-Learning update
                 state = next_state
             
             q_max_hist[run, i] = max(agent.q_pi[env.init_state[0], env.init_state[1], a] for a in [0, 2, 3])
