@@ -2,7 +2,7 @@
 # RL_Grid: Grid world for analyzing maximization bias in RL with Q-learning and Double Q-learning
 #
 # rl_grid_main_mp.py:
-# > Main script for running the RL project with multiprocessing
+# > Main script for running the RL project with multiprocessing involved
 # ---------------------------------------------------------------------------------------------
 
 import numpy as np
@@ -18,8 +18,8 @@ def train_agent(agent_class, config, queue, agent_type):
     env = GridWorldEnv(config)
     agent = agent_class(config, env.actions)
 
-    q_max_hist = np.zeros((config.num_runs, config.num_episodes))
-    q_ae_hist = np.zeros((config.num_runs, config.num_episodes))
+    q_max_hist = np.zeros((config.num_runs, config.num_episodes))       # The maximum Q-Value of all non-optimal actions
+    q_opt_hist = np.zeros((config.num_runs, config.num_episodes))       # Q-Value of the optimal action  
 
     for run in tqdm(range(config.num_runs), desc=f"Training Runs ({agent_type})"):
         agent.reset(config, env.actions)
@@ -28,16 +28,16 @@ def train_agent(agent_class, config, queue, agent_type):
             done = False
 
             while not done:
-                action = agent.take_action(state)
-                obs, reward, done = env.step(action)
-                next_state = obs['state']
-                agent.q_learning_update(state, action, reward, next_state)
+                action = agent.take_action(state)                               # Take an action according to the current policy
+                obs, reward, done = env.step(action)                            # Receive observations and reward from the environment
+                next_state = obs['state']                                       
+                agent.q_learning_update(state, action, reward, next_state)      # Perform (Double)Q-Learning update
                 state = next_state
             
             q_max_hist[run, i] = max(agent.q_pi[env.init_state[0], env.init_state[1], a] for a in [0, 2, 3])
-            q_ae_hist[run, i] = agent.q_pi[env.init_state[0], env.init_state[1], 1]
+            q_opt_hist[run, i] = agent.q_pi[env.init_state[0], env.init_state[1], 1]
 
-    queue.put((agent_type, np.mean(q_max_hist, axis=0), np.mean(q_ae_hist, axis=0)))
+    queue.put((agent_type, np.mean(q_max_hist, axis=0), np.mean(q_opt_hist, axis=0)))       # Store the Q-values averaged over all runs
 
 def main():
     config = RLGridConfiguration()  
@@ -56,14 +56,14 @@ def main():
 
     results = {}
     for _ in agents:
-        agent_type, q_max_avg, q_ae_avg = queue.get()
-        results[agent_type] = (q_max_avg, q_ae_avg)
+        agent_type, q_max_avg, q_opt_avg = queue.get()          # q_max_avg: Maximum Q-Value of all non-optimal actions averaged over all runs
+        results[agent_type] = (q_max_avg, q_opt_avg)            # q_opt_avg: Q-Value of the optimal action averaged over all runs
 
     for p in processes:
         p.join()
 
     # Extract results and plot
-    plot_results(results["Q-Learning"][0], results["Q-Learning"][1], results["DoubleQ-Learning"][0], results["DoubleQ-Learning"][1])
+    plot_results(results)
 
 if __name__ == "__main__":
     main()

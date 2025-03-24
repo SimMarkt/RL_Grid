@@ -46,22 +46,17 @@ class GridWorldEnv:
         self.reward_prob = np.ones((self.RLGridConfiguration.ROW_DIM_GLOB, self.RLGridConfiguration.COLUMN_DIM_GLOB, 4))    # Map with reward probabilities
 
         # Define positions for each type of reward (x,y,action)
-        reward_positions_pos = [
-            (2, 3, 1), (1, 2, 0), (1, 2, 1), (1, 2, 3),
-            (3, 2, 1), (3, 2, 2), (3, 2, 3), (2, 1, 0),
-            (2, 1, 2), (2, 1, 3)
-        ]
-        reward_positions_neg = [
+        reward_positions = [
             (1, 2, 0), (1, 2, 1), (1, 2, 3),
             (3, 2, 1), (3, 2, 2), (3, 2, 3),
             (2, 1, 0), (2, 1, 2), (2, 1, 3)
         ]
-        reward_prob_positions = reward_positions_neg
 
-        # Set the values using the helper function
-        self.set_reward_values(self.reward_pos, reward_positions_pos, self.RLGridConfiguration.rew_pos)
-        self.set_reward_values(self.reward_neg, reward_prob_positions, self.RLGridConfiguration.rew_neg)
-        self.set_reward_values(self.reward_prob, reward_prob_positions, self.RLGridConfiguration.prob_pos)
+        # Set the reward values and probabilities
+        self.set_reward_values(self.reward_pos, reward_positions, self.RLGridConfiguration.rew_pos)
+        self.set_reward_values(self.reward_neg, reward_positions, self.RLGridConfiguration.rew_neg)
+        self.set_reward_values(self.reward_prob, reward_positions, self.RLGridConfiguration.prob_pos)
+        self.reward_pos[2, 3, 1] = self.RLGridConfiguration.rew_pos_opt
 
         self.k = 0      # Training step
 
