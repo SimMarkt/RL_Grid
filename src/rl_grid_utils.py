@@ -5,8 +5,10 @@
 # > Utility functions for plotting the RL training results
 # ---------------------------------------------------------------------------------------------
 
-def plot_results(q_max_not_ae_avg, q_ae_avg):
+def plot_results(results):
     import matplotlib.pyplot as plt
+
+
 
     plt.rcParams.update({'font.size': 14})
     plt.rcParams["font.family"] = "serif"
@@ -17,15 +19,15 @@ def plot_results(q_max_not_ae_avg, q_ae_avg):
     
     axs[0].grid()
     axs[0].set_ylim([0, 0.8])
-    axs[0].plot(q_max_not_ae_avg, 'gray', linestyle="dotted", linewidth=1.7, label=' ')
-    axs[0].plot(q_ae_avg, 'darkblue', linewidth=1.7, label=' ')
-    axs[0].set_ylabel(' ')
+    axs[0].plot(results["Q-Learning"][0], 'gray', linestyle="dotted", linewidth=1.7, label='Non-optimal')
+    axs[0].plot(results["Q-Learning"][1], 'darkblue', linewidth=1.7, label='Optimal')
+    axs[0].set_ylabel('State-action value q$_{\pi}$')
 
     axs[1].grid()
     axs[1].set_ylim([0, 0.8])
-    axs[1].plot(q_max_not_ae_avg, 'gray', linestyle="dotted", linewidth=1.7, label=' ')
-    axs[1].plot(q_ae_avg, 'darkblue', linewidth=1.7, label=' ')
-    axs[1].set_ylabel(' ')
+    axs[1].plot(results["DoubleQ-Learning"][0], 'gray', linestyle="dotted", linewidth=1.7, label='Non-optimal')
+    axs[1].plot(results["DoubleQ-Learning"][1], 'darkblue', linewidth=1.7, label='Optimal')
+    axs[1].set_ylabel('State-action value q$_{\pi}$')
     axs[1].set_xlabel('Episodes')
 
     plt.savefig(f'plots/Q-Learning_Gridworld_plot.png')
