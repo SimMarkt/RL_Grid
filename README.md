@@ -1,21 +1,23 @@
-# RL_Project
+# RL_Grid
 
 ## Overview
 This project implements a reinforcement learning framework using a grid world environment. It includes various reinforcement learning agents and utilities for plotting results.
 
 ## Project Structure
 ```
-RL_Project
+RL_Grid
+├── config
+│   └── config.py
+│
 ├── src
-│   ├── environments
-│   │   └── gridworld_env.py
-│   ├── agents
-│   │   └── rl_agents.py
-│   ├── utils
-│   │   └── plotting.py
-│   └── main.py
+│   ├── rl_grid_agents.py
+│   ├── rl_grid_config.py
+│   ├── rl_grid_env.py
+│   └── rl_grid_utils.py
+│
 ├── requirements.txt
-└── README.md
+└── rl_grid_main.py
+
 ```
 
 ## Installation
