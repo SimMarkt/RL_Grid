@@ -5,7 +5,7 @@ The RL_Grid project provides a grid world environment for analyzing maximization
 
 ![RL_PtG_int](plots/GridWorld.png)
 
-*Figure 1: 2D grid world with the optimal path (s<sup>0</sup>, a<sup>e</sup>, s<sup>2</sup>, a<sup>e</sup>, T) [T: Terminal state; p(r|s,a): Probability of the reward r for taking action a in state s; q<sub>&pi,opt</sub>: State-action value of the optimal path in s<sup>0</sup>; q<sub>&pi,non-opt</sub>: Maximum state-action value of the non-optimal path in s<sup>0</sup>; &alpha: Learning rate; &gamma; Discount factor; &epsilon: Exploration coefficient].*
+*Figure 1: 2D grid world with the optimal path (s<sup>0</sup>, a<sup>e</sup>, s<sup>2</sup>, a<sup>e</sup>, T) [T: Terminal state; p(r|s,a): Probability of the reward r for taking action a in state s; q<sub>π,opt</sub>: State-action value of the optimal path in s<sup>0</sup>; q<sub>π,non-opt</sub>: Maximum state-action value of the non-optimal path in s<sup>0</sup>; α; : Learning rate; γ; ; Discount factor; ε: Exploration coefficient].*
 
 
 ## Overview
