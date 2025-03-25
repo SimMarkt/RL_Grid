@@ -44,15 +44,15 @@ Q-Learning is a fundamental value-based, off-policy RL algorithm with a temporal
 
 In Q-Learning, these estimates are derived by a TD update rule. After the agent takes an action a in state s, it observes the reward r and the next state s'. Based on this information, Q-Learning updates q<sub>π</sub>(s,a) using the following update rule:
 
-q<sub>π</sub>(s,a) <- q<sub>π</sub>(s,a) + α ((r + γ max<sub>a'</sub> q<sub>π</sub>(s',a')) - q<sub>π</sub>(s,a))
+> q<sub>π</sub>(s,a) <- q<sub>π</sub>(s,a) + α ((r + γ max<sub>a'</sub> q<sub>π</sub>(s',a')) - q<sub>π</sub>(s,a))
 
 The update rule adjusts q<sub>π</sub>(s,a) incrementally. The learning rate α determines the size of the update. While low α values result in slow but more stable learning, a high α transfers the last information quite directly to q<sub>π</sub>(s,a) which might lead to instabilities for noisy (s,a,r,s') pairs. On the other hand, the discount factor γ rates the potential future reward - indicated by q<sub>π</sub>(s',a') - to the immediate reward r. 
 
 As presented, Q-Learning with an ε-greedy policy contains two *max* operators, for choosing the greedy policy with probability 1-ε, and for the q<sub>π</sub> update. For this reason, Q-Learning is susceptible to maximization bias. To ameliorate this problem, Hasselt [3] introduced Double Q-Learning. In Double Q-Learning, the agent learns two different Q-function:
 
-q<sub>π,1</sub>(s,a) <- q<sub>π,1</sub>(s,a) + α ((r + γ q<sub>π,2</sub>(s',argmax<sub>a'</sub> q<sub>π,1</sub>(s',a'))) - q<sub>π,1</sub>(s,a))
+> q<sub>π,1</sub>(s,a) <- q<sub>π,1</sub>(s,a) + α ((r + γ q<sub>π,2</sub>(s',argmax<sub>a'</sub> q<sub>π,1</sub>(s',a'))) - q<sub>π,1</sub>(s,a))
 
-q<sub>π,2</sub>(s,a) <- q<sub>π,2</sub>(s,a) + α ((r + γ q<sub>π,1</sub>(s',argmax<sub>a'</sub> q<sub>π,2</sub>(s',a'))) - q<sub>π,2</sub>(s,a))
+> q<sub>π,2</sub>(s,a) <- q<sub>π,2</sub>(s,a) + α ((r + γ q<sub>π,1</sub>(s',argmax<sub>a'</sub> q<sub>π,2</sub>(s',a'))) - q<sub>π,2</sub>(s,a))
 
 The second Q-function q<sub>π,2</sub> is used for the estimate of the future expected reward in (s', a'). A high bias in q<sub>π,1</sub>(s', a') is therefore not directly transfered to q<sub>π,1</sub>(s,a), but checked by the q<sub>π,2</sub>. This procedure can considerably decrease the maximization bias.
 
@@ -111,42 +111,127 @@ Contains source code for RL agents and the environment:
 ### **Miscellaneous**  
 - **`requirements.txt`** – Lists required Python libraries.
 
+Note that the script runs the two different agents (Q-Learning, Double Q-Learning) in parallel to accelarate the training procedure. Altough the environment itself is quite fast, it takes some time to train the agents for enough episodes (>1000) and a large amount of training runs. Since the reward model includes certain stochasticity, you need a sufficient number of independent training runs to disclose the expected agents learning performance in average. The parallel computing is implemented by multiprocessing of the code.
+
+---
+
 ## Installation and Usage
-To set up the project, clone the repository and install the required dependencies. You can do this by running:
 
-```bash
-pip install -r requirements.txt
-```
+The current project has been prepared for running in a virtual environment or a Docker container.
 
-## Usage
+## Using a virtual environment
 To run the project, execute the `main.py` file:
 
 ```bash
-python src/main.py
+# Clone the repository
+git clone https://github.com/SimMarkt/RL_Grid.git
+
+# Navigate to the project directory
+cd RL_Grid
+
+# Create a Python virtual environment
+python -m venv venv
+
+# Activate the virtual environment
+.\venv\Scripts\activate
+
+# Install the required python libraries
+pip install -r requirements.txt
+
 ```
 
-This will initialize the grid world environment, create the reinforcement learning agents, and start the training process. After training, the results will be plotted automatically.
+After setting up the Python environment and installing the necessary packages, you can adjust the environment, agent, and training configurations by modifying the YAML file in the `config/` directory. RL training is initiated by running the main script `rl_main_grid.py`. 
 
-## Components
+### Using a Docker container
 
-### Environment
-- **GridWorldEnv**: This class implements the grid world environment. It includes methods for:
-  - Initializing the environment
-  - Stepping through actions
-  - Resetting the environment
-  - Checking if an episode is done
+To run **RL_PtG** as a Docker container, follow these steps to install and run the project:
 
-### Agents
-- **QAgent**: Implements the Q-learning algorithm.
-- **DoubleQAgent**: Implements the Double Q-learning algorithm.
+```bash
+# Clone the repository
+git clone https://github.com/SimMarkt/RL_PtG.git
 
-Both agents have methods for:
-- Taking actions
-- Updating policies
-- Performing Q-learning updates
+# Navigate to the project directory
+cd RL_Grid
 
-### Utilities
-- **Plotting Functions**: Utility functions for visualizing results, including efficiency plots and reward histories.
+# Build the Docker container using the 'Dockerfile'
+docker build -t rl-grid:v1 .
+
+# Verify that the image was created successfully
+docker images
+
+>>
+REPOSITORY    TAG       IMAGE ID       CREATED         SIZE
+rl-grid       v1        ...            5 minutes ago   5.87GB
+>>
+
+# Run the container
+docker run --rm -it rl-grid:v1
+
+```
+
+If you need to adjust the environment, agent, or training configurations, you can modify the YAML files located in the `config/` directory. After making these changes, rebuild the Docker image to apply them in the container (you can also optionally update the tag):
+
+```bash
+# Rebuild the Docker image using the 'Dockerfile'
+docker build -t rl-ptg:v1 .
+
+# Verify that the image was created successfully
+docker images
+
+>>
+REPOSITORY    TAG       IMAGE ID       CREATED         SIZE
+rl-ptg        v1        ...            1 minutes ago   5.87GB
+>>
+
+# Run the container
+docker run --rm -it rl-ptg:v1
+
+```
+
+Please note that training the RL agents can be resource-intensive, especially if you're performing extensive hyperparameter optimization or conducting in-depth analysis using multiple random seeds. In such cases, it's recommended to avoid using the Docker container and instead set up a Python virtual environment (as described above) for better performance.
+
+### Evaluation
+
+After training both agents, the code plots the results to `plots/Q-Learning_Gridworld_plot.png`. Fig. 3 illustrates the averaged results for 200 runs. As can be seen, Q-Learning suffers from considerable maximization bias at the beginning of training. The non-optimal actions (a<sup>n</sup>, a<sup>s</sup>, and a<sup>w</sup>) tend to entail a larger q<sub>π</sub> value, since the agent sometimes encounter the large positive reward of 3. However, in expectation, the reward is lower than with taking a<sup>e</sup>, which observered only after more than 600 episodes.
+
+![RL_Grid_Plot](plots/Q-Learning_Gridworld_plot.png)
+
+*Figure 3: State-action values for the optimal action (a<sup>e</sup>) in s<sup>0</sup> (q<sub>π,opt</sub>) and the maximum of the non-optimal actions (q<sub>π,non-opt</sub>) for Q-Learning and Double Q-Learning, averaged for 200 runs.*
+
+On the contrary, the Double Q-Learning algorithm almost immediately detects the higher value of q<sub>π</sub>(s<sup>0</sup>, a<sup>e</sup>) and successfully obviates the overestimation of q<sub>π,non-opt</sub>.
+
+---
+
+## Requirements
+- Required libraries:
+  - `matplotlib`
+  - `tqdm`
+  - `numpy`
+  - `pyyaml`
+
+To avoid any version conflicts, it is recommended to use the libraries given in `requirements.txt`. 
+
+---
+
+## License
+
+This project is licensed under [MIT License](LICENSE).
+
+---
+
+## Citing
+
+If you use **RL_Grid** in your research, please cite it using the following BibTeX entry:
+```BibTeX
+@misc{RL_Grid,
+  author = {Markthaler, Simon},
+  title = {RL_Grid: Grid world for analyzing maximization bias in RL using Q-learning and Double Q-learning},
+  year = {2025},
+  url = {https://github.com/SimMarkt/RL_Grid}
+}
+```
+
+---
 
 ## References
 
@@ -156,13 +241,3 @@ Both agents have methods for:
 
 [3] H. V. Hasselt, "*Double Q-learning*", Advances in neural information processing systems, 23, 2010, 1–9
 
-## Requirements
-The project requires the following Python packages:
-- numpy
-- matplotlib
-- tqdm
-
-Make sure to install these packages using the `requirements.txt` file.
-
-## License
-This project is licensed under the MIT License. See the LICENSE file for more details.
