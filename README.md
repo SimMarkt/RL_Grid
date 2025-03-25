@@ -37,7 +37,24 @@ To investigate maximization bias, **RL_Grid** applies a simple 2D grid world env
 Due to the reward model, the optimal path with the highest expected reward of 1 is (s<sup>0</sup>, a<sup>e</sup>, s<sup>2</sup>, a<sup>e</sup>, T). By contrast, the expected reward for entering T being in s<sup>1</sup>, s<sup>3</sup>, or s<sup>4</sup> only offers 0.76. However, the agent may encounter a reward of 3 with 44 % probability, which can lead to an overestimation of state-action values at the beginning of training. 
 
 ### Q-Learning and Double Q-Learning
-Q-Learning is a fundamental value-based, off-policy RL algorithm with a temporal difference (TD) update of the state-action value. These q<sub>π</sub> values support the agent in taking a good action in the environment. Typically, the action selection involves an ε-greedy policy. , it decides on taking . For more information, please refer to [2].
+
+**Note**: *For the sake of brevity, this subsection outlines only the basic principles for training the Q-Learning and Double Q-Learing algorithms. For more details and comprehensive information, please refer to [2].* 
+
+Q-Learning is a fundamental value-based, off-policy RL algorithm with a temporal difference (TD) update of the state-action value. These q<sub>π</sub> values support the agent in taking beneficial actions in the environment. In a simple but effective manner, the agent can choose the action with the highest q<sub>π</sub> (greedy policy). However, since the agent does not explore the environment in this case, i.e., taking other action than the one with the highest q<sub>π</sub> value, it cannot improve the q<sub>π</sub> estimate of the other actions (for non-optimistic initialization). This can lead to a policy where the agent always takes a non-optimal action. To circumvent this problem, the policy typically includes a probability ε, with which the agent takes a random action (ε-greedy policy). This ensures that all actions are selected sufficiently often on the long run, to build a good estimate of the state-action values.
+
+In Q-Learning, these estimates are derived by a TD update rule. After the agent takes an action a in state s, it observes the reward r and the next state s'. Based on this information, Q-Learning updates q<sub>π</sub>(s,a) using the following update rule:
+
+q<sub>π</sub>(s,a) <- q<sub>π</sub>(s,a) + α ((r + γ max<sub>a'</sub> q<sub>π</sub>(s',a')) - q<sub>π</sub>(s,a))
+
+The update rule adjusts q<sub>π</sub>(s,a) incrementally. The learning rate α determines the size of the update. While low α values result in slow but more stable learning, a high α transfers the last information quite directly to q<sub>π</sub>(s,a) which might lead to instabilities for noisy (s,a,r,s') pairs. On the other hand, the discount factor γ rates the potential future reward - indicated by q<sub>π</sub>(s',a') - to the immediate reward r. 
+
+As presented, Q-Learning with an ε-greedy policy contains two *max* operators, for choosing the greedy policy with probability 1-ε, and for the q<sub>π</sub> update. For this reason, Q-Learning is susceptible to maximization bias. To ameliorate this problem, Hasselt [3] introduced Double Q-Learning. In Double Q-Learning, the agent learns two different Q-function:
+
+q<sub>π,1</sub>(s,a) <- q<sub>π,1</sub>(s,a) + α ((r + γ q<sub>π,2</sub>(s',argmax<sub>a'</sub> q<sub>π,1</sub>(s',a'))) - q<sub>π,1</sub>(s,a))
+
+q<sub>π,2</sub>(s,a) <- q<sub>π,2</sub>(s,a) + α ((r + γ q<sub>π,1</sub>(s',argmax<sub>a'</sub> q<sub>π,2</sub>(s',a'))) - q<sub>π,2</sub>(s,a))
+
+The second Q-function q<sub>π,2</sub> is used for the estimate of the future expected reward in (s', a'). A high bias in q<sub>π,1</sub>(s', a') is therefore not directly transfered to q<sub>π,1</sub>(s,a), but checked by the q<sub>π,2</sub>. This procedure can considerably decrease the maximization bias.
 
 ## Project Structure
 
@@ -64,9 +81,35 @@ Contains configuration file for the project.
 
 ### `src/`
 Contains source code for RL agents and the environment:  
-- **`src/rl_config_train.py`**: Preprocesses training settings.
-  - `TrainConfiguration()`: Training class.
-- **`data/OP.../data-meth_cooldown.csv`**: Cold startup data.
+- **`src/rl_grid_agents.py`**: Implementation of the Q-Learning and Double Q-Learning algorithms with ε-greedy policies.
+  - `QAgent()`: Q-Learning class.
+    - `update_policy()`: Updates the policy based on the q<sub>π</sub>.
+    - `q_learning_update()`: Updates q<sub>π</sub>(s,a) based on the Q-Learning update rule.
+    - `take_action()`: Takes an action according the current ε-greedy policy.
+    - `reset()`: Resets the agent.  
+  - `DoubleQAgent()`: Double Q-Learning class.
+    - `update_policy()`: Updates the policy based on the q<sub>π</sub>.
+    - `q_learning_update()`: Updates q<sub>π</sub>(s,a) based on the Double Q-Learning update rule.
+    - `take_action()`: Takes an action according the current ε-greedy policy.
+    - `reset()`: Resets the agent.  
+- **`src/rl_grid_config.py`**: Configuration class for RL_Grid.
+- **`src/rl_grid_env.py`**: Contains the grid world environment.
+  - `GridWorldEnv()`: Grid world environment class.
+    - `_get_obs()`: Returns the current observation.
+    - `_get_reward()`: Calculates the reward based on the current state and action.
+    - `reset()`: Resets the environment.
+    - `step()`: Executes an action in the environment.  
+    - `_is_done()`: Checks whether the agent reaches a terminal state and the episode is done.
+- **`src/rl_grid_utils.py`**: Provides code for visualization of the training results.
+  - `plot_results()`: Generates a plot showing the Q-values averaged over all training runs.
+
+### **Main Script**  
+- **`rl_grid_main.py`** – The main script for parallel training the two RL agents in the grid world environment with multiple processes.  
+  - `train_agent()` – Function for training a single agent in a separate process.  
+  - `main()` – Runs model training and evaluation.  
+
+### **Miscellaneous**  
+- **`requirements.txt`** – Lists required Python libraries.
 
 ## Installation and Usage
 To set up the project, clone the repository and install the required dependencies. You can do this by running:
