@@ -4,8 +4,6 @@ The **RL_Grid** project provides a grid world environment for analyzing maximiza
 
 ![RL_Grid_Max](plots/Maximization.png)
 
-*Figure 1: The 2D grid world (left) and the learning curve of Q-Learning with the maximization bias of the non-optimal actions at the beginning of RL training.*
-
 *Figure 1: The 2D grid world (left) and the learning curve of Q-Learning showing the maximization bias of non-optimal actions at the beginning of RL training (right).*
 
 ---
@@ -60,7 +58,7 @@ To mitigate this issue, Hasselt [3] introduced Double Q-Learning, where the agen
 
 > q<sub>π,2</sub>(s,a) <- q<sub>π,2</sub>(s,a) + α ((r + γ q<sub>π,1</sub>(s',argmax<sub>a'</sub> q<sub>π,2</sub>(s',a'))) - q<sub>π,2</sub>(s,a))
 
-This approach reduces maximization bias by using one Q-function to estimate the future reward and the other to update the current state-action value.
+This approach reduces maximization bias by using one Q-function to estimate the future reward and the other to update the current state-action value. A potential maximization bias of one Q-function will therefore be tested by the other one in the update step.
 
 ## Project Structure
 
@@ -89,14 +87,14 @@ Configuration file for the project.
 Contains source code for RL agents and the environment: 
 - **`src/rl_grid_agents.py`**: Implements Q-Learning and Double Q-Learning algorithms.
   - `QAgent()`: Q-Learning class.
-    - `update_policy()`: Updates the policy based on the q<sub>π</sub>.
+    - `update_policy()`: Updates the policy based on q<sub>π</sub>.
     - `q_learning_update()`: Updates q<sub>π</sub>(s,a) based on the Q-Learning update rule.
-    - `take_action()`: Takes an action according the current ε-greedy policy.
+    - `take_action()`: Takes an action according to the current ε-greedy policy.
     - `reset()`: Resets the agent.  
   - `DoubleQAgent()`: Double Q-Learning class.
     - `update_policy()`: Updates the policy based on the q<sub>π</sub>.
     - `q_learning_update()`: Updates q<sub>π</sub>(s,a) based on the Double Q-Learning update rule.
-    - `take_action()`: Takes an action according the current ε-greedy policy.
+    - `take_action()`: Takes an action according to the current ε-greedy policy.
     - `reset()`: Resets the agent.  
 - **`src/rl_grid_config.py`**: Configuration class for RL_Grid.
 - **`src/rl_grid_env.py`**: Defines the grid world environment.
@@ -105,7 +103,7 @@ Contains source code for RL agents and the environment:
     - `_get_reward()`: Calculates the reward based on the current state and action.
     - `reset()`: Resets the environment.
     - `step()`: Executes an action in the environment.  
-    - `_is_done()`: Checks whether the agent reaches a terminal state and the episode is done.
+    - `_is_done()`: Checks whether the agent has reached a terminal state and the episode is complete.
 - **`src/rl_grid_utils.py`**: Provides visualization utilities.
   - `plot_results()`: Generates a plot showing the Q-values averaged over all training runs.
 
@@ -117,16 +115,17 @@ Contains source code for RL agents and the environment:
 ### **Miscellaneous**  
 - **`requirements.txt`** – Lists required Python libraries.
 
-Note that the script runs the two different agents (Q-Learning, Double Q-Learning) in parallel to accelarate the training procedure. Altough the environment itself is quite fast, it takes some time to train the agents for enough episodes (>1000) and a large amount of training runs. Since the reward model includes certain stochasticity, you need a sufficient number of independent training runs to disclose the expected agents learning performance in average. The parallel computing is implemented by multiprocessing of the code.
+
+Note that the script runs the two different agents (Q-Learning and Double Q-Learning) in parallel to accelerate the training process. Although the environment itself is quite fast, training the agents for enough episodes (>1000) and a large number of training runs can take time. Since the reward model includes certain stochasticity, a sufficient number of independent training runs is required to reveal the agents' average learning performance. Parallel computing is implemented using multiprocessing.
 
 ---
 
 ## Installation and Usage
 
-The current project has been prepared for running in a virtual environment or a Docker container.
+The project can be run in a virtual environment or a Docker container.
 
 ## Using a virtual environment
-To run the project, execute the `main.py` file:
+To run the project, follow these steps:
 
 ```bash
 # Clone the repository
@@ -146,11 +145,11 @@ pip install -r requirements.txt
 
 ```
 
-After setting up the Python environment and installing the necessary packages, you can adjust the environment, agent, and training configurations by modifying the YAML file in the `config/` directory. RL training is initiated by running the main script `rl_main_grid.py`. 
+After setting up the Python environment and installing the necessary packages, you can adjust the environment, agent, and training configurations by modifying the YAML file in the `config/` directory. RL training is initiated by running the main script `rl_grid_main.py`. 
 
 ### Using a Docker container
 
-To run **RL_PtG** as a Docker container, follow these steps to install and run the project:
+To run **RL_PtG** in a Docker container, follow these steps to install and run the project:
 
 ```bash
 # Clone the repository
@@ -200,11 +199,14 @@ Please note that training the RL agents can be resource-intensive, especially if
 
 After training both agents, the code plots the results to `plots/Q-Learning_Gridworld_plot.png`. Fig. 3 illustrates the averaged results for 200 runs. As can be seen, Q-Learning suffers from considerable maximization bias at the beginning of training. The non-optimal actions (a<sup>n</sup>, a<sup>s</sup>, and a<sup>w</sup>) tend to entail a larger q<sub>π</sub> value, since the agent sometimes encounter the large positive reward of 3. However, in expectation, the reward is lower than with taking a<sup>e</sup>, which observered only after more than 600 episodes.
 
+After training both agents, the code generates a plot saved as `plots/Q-Learning_Gridworld_plot.png`. Figure 3 illustrates the averaged results over 200 runs. As shown, Q-Learning suffers from significant maximization bias in early training. The non-optimal actions (a<sup>n</sup>, a<sup>s</sup>, and a<sup>w</sup>) tend to have larger q<sub>π</sub> values because the agent occasionally encounters a large positive reward of 3. However, on average, the reward is lower than that obtained by taking the optimal action a<sup>e</sup>, which becomes evident only after more than 600 episodes.
+
+
 ![RL_Grid_Plot](plots/Q-Learning_Gridworld_plot.png)
 
-*Figure 3: State-action values for the optimal action (a<sup>e</sup>) in s<sup>0</sup> (q<sub>π,opt</sub>) and the maximum of the non-optimal actions (q<sub>π,non-opt</sub>) for Q-Learning and Double Q-Learning, averaged for 200 runs.*
+*Figure 3: State-action values for the optimal action (a<sup>e</sup>) in s<sup>0</sup> (q<sub>π,opt</sub>) and the maximum of the non-optimal actions (q<sub>π,non-opt</sub>) for Q-Learning and Double Q-Learning, averaged over 200 runs.*
 
-On the contrary, the Double Q-Learning algorithm almost immediately detects the higher value of q<sub>π</sub>(s<sup>0</sup>, a<sup>e</sup>) and successfully obviates the overestimation of q<sub>π,non-opt</sub>.
+In contrast, the Double Q-Learning algorithm almost immediately identifies the higher value of q<sub>π</sub>(s<sup>0</sup>, a<sup>e</sup>) and effectively avoids the overestimation of q<sub>π,non-opt</sub>.
 
 ---
 
