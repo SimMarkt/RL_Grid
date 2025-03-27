@@ -166,7 +166,7 @@ docker images
 
 >>
 REPOSITORY    TAG       IMAGE ID       CREATED         SIZE
-rl-grid       v1        ...            5 minutes ago   5.87GB
+rl-grid       v1        ...            8 seconds ago   1.15GB
 >>
 
 # Run the container
@@ -185,7 +185,7 @@ docker images
 
 >>
 REPOSITORY    TAG       IMAGE ID       CREATED         SIZE
-rl-grid        v1        ...            1 minutes ago   5.87GB
+rl-grid       v1        ...            2 minutes ago   1.15GB
 >>
 
 # Run the container

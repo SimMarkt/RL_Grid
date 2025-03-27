@@ -10,5 +10,5 @@ COPY . /app
 # Install any needed packages specified in requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Run rl_main_grid.py when the container launches
-CMD ["python", "rl_main_grid.py"]
+# Run rl_grid_main.py when the container launches
+CMD ["python", "rl_grid_main.py"]
