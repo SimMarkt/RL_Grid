@@ -41,9 +41,9 @@ class GridWorldEnv:
 
         # Define the reward, reward probability, and negative reward mappings
         self.reward = None                                                                                                  # Current reward
-        self.reward_pos = np.zeros((self.RLGridConfiguration.ROW_DIM_GLOB, self.RLGridConfiguration.COLUMN_DIM_GLOB, 4))    # Positive reward map
-        self.reward_neg = np.zeros((self.RLGridConfiguration.ROW_DIM_GLOB, self.RLGridConfiguration.COLUMN_DIM_GLOB, 4))    # Negative reward map
-        self.reward_prob = np.ones((self.RLGridConfiguration.ROW_DIM_GLOB, self.RLGridConfiguration.COLUMN_DIM_GLOB, 4))    # Reward probability map
+        self.reward_pos = np.zeros((self.RLGridConfiguration.row_dim_glob, self.RLGridConfiguration.column_dim_glob, 4))    # Positive reward map
+        self.reward_neg = np.zeros((self.RLGridConfiguration.row_dim_glob, self.RLGridConfiguration.column_dim_glob, 4))    # Negative reward map
+        self.reward_prob = np.ones((self.RLGridConfiguration.row_dim_glob, self.RLGridConfiguration.column_dim_glob, 4))    # Reward probability map
 
         # Define positions for each type of reward (x, y, action)
         reward_positions = [

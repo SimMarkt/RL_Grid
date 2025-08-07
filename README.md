@@ -143,6 +143,9 @@ python -m venv venv
 # Install the required python libraries
 pip install -r requirements.txt
 
+# Run the project
+python rl_grid_main.py
+
 ```
 
 After setting up the Python environment and installing the necessary packages, you can adjust the environment, agent, and training configurations by modifying the YAML file in the `config/` directory. RL training is initiated by running the main script `rl_grid_main.py`. 
