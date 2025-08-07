@@ -56,7 +56,7 @@ class QAgent:
                 # Randomly choose one of the best actions.
                 self.policy[row, col] = np.random.choice(best_indices)
 
-    def q_learning_update(self, state: np.ndarray, action: int, 
+    def q_learning_update(self, state: np.ndarray, action: int,
                           reward: float, next_state: np.ndarray) -> None:
         '''
         Updates the state-action value according to the Q-Learning algorithm.
@@ -126,7 +126,7 @@ class DoubleQAgent:
         # Update the policy.
         self.update_policy()
 
-    def argmax(self, q_pi_temp, state) -> int:
+    def argmax(self, q_pi_temp: np.ndarray, state: np.ndarray) -> int:
         '''
         Helper function to find the action with the maximum Q-value for a specific state.
         :param q_pi_temp: The state-action values.
@@ -154,7 +154,7 @@ class DoubleQAgent:
                 state = np.array([row, col])
                 self.policy[row, col] = self.argmax(self.q_pi, state)
 
-    def q_learning_update(self, state: np.ndarray, action: int, 
+    def q_learning_update(self, state: np.ndarray, action: int,
                           reward: float, next_state: np.ndarray) -> None:
         '''
         Updates the state-action value according to the Double-Q-Learning algorithm.

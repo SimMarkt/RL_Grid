@@ -24,7 +24,7 @@ class RLGridConfiguration():
     num_runs: int
     num_episodes: int
 
-    def __init__(self):
+    def __init__(self) -> None:
         # Load the environment configuration from the YAML file
         with open("config/config.yaml", "r", encoding="utf-8") as env_file:
             grid_config = yaml.safe_load(env_file)
@@ -37,7 +37,7 @@ class RLGridConfiguration():
 
         self.__print_init()
 
-    def __print_init(self):
+    def __print_init(self) -> None:
         print('\n---------------------------------------------' +
               '-----------------------------------------------')
         print('-----------------'+
